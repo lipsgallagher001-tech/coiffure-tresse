@@ -81,7 +81,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({ isOpen, 
                     <h4 className="text-stone-900 font-bold text-[10px] uppercase tracking-widest">Inclus dans la séance :</h4>
                     <ul className="grid grid-cols-1 gap-3">
                       {[
-                        "Consultation personnalisée & Diagnostic IA",
+                        "Consultation personnalisée & Analyse Capillaire",
                         "Lavage avec soins botaniques premium",
                         "Application de sérums protecteurs",
                         "Conseils d'entretien post-coiffure"

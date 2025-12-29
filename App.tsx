@@ -7,7 +7,6 @@ import { Services } from './components/Services';
 import { Gallery } from './components/Gallery';
 import { About } from './components/About';
 import { Testimonials } from './components/Testimonials';
-import { HairAssistant } from './components/HairAssistant';
 import { Footer } from './components/Footer';
 import { BookingModal } from './components/BookingModal';
 import { AdminDashboard } from './components/AdminDashboard';
@@ -19,7 +18,7 @@ const INITIAL_TESTIMONIALS: Testimonial[] = [
     id: '1',
     name: "Fatou Diop",
     role: "Cliente Fidèle",
-    content: "Une expérience hors du temps. Mes nattes sont non seulement magnifiques mais elles tiennent parfaitement sans abîmer mes racines. Le diagnostic IA d'Aïda est impressionnant !",
+    content: "Une expérience hors du temps. Mes nattes sont non seulement magnifiques mais elles tiennent parfaitement sans abîmer mes racines. L'expertise de l'équipe est impressionnante !",
     avatar: "https://images.unsplash.com/photo-1531123897727-8f129e16fd3c?q=80&w=200&auto=format&fit=crop",
     rating: 5,
     date: '10 Oct 2024',
@@ -109,8 +108,6 @@ const App: React.FC = () => {
         <section id="testimonials">
           <Testimonials testimonials={testimonials.filter(t => t.status === 'Publié')} onAddReview={openReview} />
         </section>
-
-        <HairAssistant />
       </main>
 
       <Footer onAdminClick={() => setIsAdminView(true)} />

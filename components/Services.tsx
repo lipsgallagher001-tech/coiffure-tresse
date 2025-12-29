@@ -15,8 +15,8 @@ const services: Service[] = [
   },
   {
     id: '2',
-    title: 'Rituel Soin IA',
-    description: 'Une révolution technologique au service de vos boucles. Grâce à notre scanner haute définition, nous analysons la porosité, l\'élasticité et l\'état de votre cuir chevelu. S\'ensuit un cocktail de soins botaniques formulés sur mesure pour infuser une hydratation profonde et durable.',
+    title: 'Rituel Soin Signature',
+    description: 'Une expertise artisanale au service de vos boucles. Nous réalisons une analyse personnalisée de la porosité et de l\'élasticité de votre fibre capillaire. S\'ensuit un cocktail de soins botaniques formulés sur mesure pour infuser une hydratation profonde et durable.',
     price: '10.000 CFA',
     image: 'https://images.unsplash.com/photo-1632765854612-9b02b6ec2b15?q=80&w=800&auto=format&fit=crop',
   },
