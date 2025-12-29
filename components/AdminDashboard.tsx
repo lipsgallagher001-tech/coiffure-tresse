@@ -45,7 +45,8 @@ import {
   ArrowUpRight,
   Activity,
   Zap,
-  ChevronRight
+  ChevronRight,
+  MessageCircle
 } from 'lucide-react';
 import { Service, GalleryImage, Testimonial } from '../types';
 
@@ -302,30 +303,234 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit, initialT
               {activeTab === 'settings' && 'Réglages Salon'}
             </h2>
             <p className="text-stone-400 text-sm">
-              {activeTab === 'overview' ? 'Bienvenue. Voici les dernières performances de votre salon.' : 'Contrôle complet de votre identité et activités.'}
+              {activeTab === 'settings' ? 'Configurez vos informations de contact et vos horaires.' : 'Contrôle complet de votre identité et activités.'}
             </p>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" />
-              <input 
-                type="text" 
-                placeholder="Rechercher..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-3 bg-white border border-stone-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-terracotta/10 focus:border-terracotta w-64 shadow-sm"
-              />
-            </div>
+            {activeTab === 'settings' && (
+              <button 
+                onClick={handleSaveSettings}
+                className="bg-stone-900 text-white px-10 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-terracotta transition-all shadow-2xl shadow-stone-200"
+              >
+                <Save size={18} /> Enregistrer les réglages
+              </button>
+            )}
           </div>
         </header>
 
         <AnimatePresence mode="wait">
-          {/* TAB: OVERVIEW (RECONSTRUITE ET COMPLÈTE) */}
+          {/* TAB: SETTINGS (EXHAUSTIVE & FINAL) */}
+          {activeTab === 'settings' && (
+            <motion.div key="st" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-20">
+              
+              {/* Colonne de Gauche : Identité & Contact */}
+              <div className="lg:col-span-8 space-y-10">
+                
+                {/* Section 1 : Identité Visuelle */}
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50 space-y-10">
+                  <h3 className="text-xl font-serif font-bold flex items-center gap-3 text-stone-900">
+                    <AtSign size={22} className="text-terracotta" /> Identité du Salon
+                  </h3>
+                  
+                  <div className="flex flex-col md:flex-row gap-10 items-start">
+                    <div className="space-y-3 shrink-0">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold block">Logo Officiel</label>
+                      <div 
+                        onClick={() => logoFileInputRef.current?.click()}
+                        className="w-40 h-40 rounded-3xl bg-stone-50 border-2 border-dashed border-stone-100 flex flex-col items-center justify-center cursor-pointer hover:bg-terracotta/5 hover:border-terracotta transition-all overflow-hidden group"
+                      >
+                        {settings.logo ? (
+                          <img src={settings.logo} className="w-full h-full object-cover" />
+                        ) : (
+                          <>
+                            <Camera size={28} className="text-stone-300 group-hover:scale-110 transition-transform" />
+                            <span className="text-[8px] text-stone-400 font-bold mt-2 uppercase tracking-widest">Choisir Logo</span>
+                          </>
+                        )}
+                        <input type="file" ref={logoFileInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileSelect(e, (b) => updateSetting('logo', b))} />
+                      </div>
+                    </div>
+
+                    <div className="flex-grow space-y-6 w-full">
+                      <div className="space-y-2">
+                        <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Nom de l'Etablissement</label>
+                        <input 
+                          value={settings.salonName} 
+                          onChange={(e) => updateSetting('salonName', e.target.value)} 
+                          className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-2 focus:ring-terracotta/10 focus:border-terracotta outline-none transition-all" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Slogan ou Description</label>
+                        <textarea 
+                          value={settings.description} 
+                          onChange={(e) => updateSetting('description', e.target.value)} 
+                          rows={3} 
+                          className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-2 focus:ring-terracotta/10 focus:border-terracotta outline-none transition-all resize-none" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 2 : Contact & Localisation */}
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50 space-y-10">
+                  <h3 className="text-xl font-serif font-bold flex items-center gap-3 text-stone-900">
+                    <MapPin size={22} className="text-terracotta" /> Coordonnées & Adresse
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-2">
+                        <Phone size={14} className="text-stone-300" /> Téléphone Principal
+                      </label>
+                      <input 
+                        value={settings.phone} 
+                        onChange={(e) => updateSetting('phone', e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-2">
+                        <MessageCircle size={14} className="text-green-500" /> WhatsApp Business
+                      </label>
+                      <input 
+                        value={settings.whatsapp} 
+                        onChange={(e) => updateSetting('whatsapp', e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-green-100 focus:border-green-500 outline-none transition-all" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-2">
+                      <Mail size={14} className="text-blue-500" /> Email de Contact
+                    </label>
+                    <input 
+                      value={settings.email} 
+                      onChange={(e) => updateSetting('email', e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" 
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-2">
+                      <MapPin size={14} className="text-terracotta" /> Adresse Physique (Abidjan)
+                    </label>
+                    <input 
+                      value={settings.address} 
+                      onChange={(e) => updateSetting('address', e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none transition-all" 
+                    />
+                  </div>
+                </div>
+
+                {/* Section 3 : Horaires */}
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50 space-y-10">
+                  <h3 className="text-xl font-serif font-bold flex items-center gap-3 text-stone-900">
+                    <Clock size={22} className="text-terracotta" /> Horaires d'Ouverture
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Lundi - Vendredi</label>
+                      <input 
+                        value={settings.openingHours.weekdays} 
+                        onChange={(e) => updateHours('weekdays', e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Samedi</label>
+                      <input 
+                        value={settings.openingHours.saturday} 
+                        onChange={(e) => updateHours('saturday', e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Dimanche</label>
+                      <input 
+                        value={settings.openingHours.sunday} 
+                        onChange={(e) => updateHours('sunday', e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none transition-all" 
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Colonne de Droite : Réseaux Sociaux & Statistiques */}
+              <div className="lg:col-span-4 space-y-10">
+                
+                {/* Réseaux Sociaux */}
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50 space-y-8">
+                  <h3 className="text-xl font-serif font-bold flex items-center gap-3 text-stone-900">
+                    <Globe size={22} className="text-terracotta" /> Réseaux Sociaux
+                  </h3>
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-3">
+                        <Instagram size={16} className="text-pink-500" /> Instagram
+                      </label>
+                      <input 
+                        value={settings.instagram} 
+                        onChange={(e) => updateSetting('instagram', e.target.value)} 
+                        placeholder="@votresalon"
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-pink-500 outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-3">
+                        <Facebook size={16} className="text-blue-600" /> Facebook
+                      </label>
+                      <input 
+                        value={settings.facebook} 
+                        onChange={(e) => updateSetting('facebook', e.target.value)} 
+                        placeholder="Page Facebook"
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-blue-600 outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold flex items-center gap-3">
+                        <Music2 size={16} className="text-stone-900" /> TikTok
+                      </label>
+                      <input 
+                        value={settings.tiktok} 
+                        onChange={(e) => updateSetting('tiktok', e.target.value)} 
+                        placeholder="@votrecompte"
+                        className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-stone-900 outline-none transition-all" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section Info Sécurité */}
+                <div className="bg-stone-900 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-terracotta/20 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-terracotta/40 transition-colors"></div>
+                  <div className="relative z-10 text-white">
+                    <Info size={32} className="text-terracotta mb-6" />
+                    <h3 className="text-xl font-serif font-bold mb-4">Mise à jour Live</h3>
+                    <p className="text-stone-400 text-xs leading-relaxed">
+                      Toutes les modifications enregistrées ici sont appliquées instantanément sur votre site vitrine. Assurez-vous que vos coordonnées WhatsApp sont correctes pour recevoir les réservations.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bouton Enregistrer Mobile-Friendly */}
+                <button 
+                  onClick={handleSaveSettings}
+                  className="w-full bg-terracotta text-white py-6 rounded-[2rem] text-[10px] font-bold uppercase tracking-widest hover:bg-stone-800 transition-all shadow-xl shadow-terracotta/20 flex items-center justify-center gap-3"
+                >
+                  <Save size={20} /> Appliquer les Changements
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* TAB: OVERVIEW */}
           {activeTab === 'overview' && (
             <motion.div key="ov" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-10">
-              
-              {/* Stat Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { label: 'Revenus (Mois)', value: '450k CFA', icon: TrendingUp, color: 'text-green-600 bg-green-50', trend: '+12%' },
@@ -346,10 +551,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit, initialT
                 ))}
               </div>
 
-              {/* Main Overview Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                {/* Activité Récente (Flux) */}
                 <div className="lg:col-span-2 bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50">
                   <div className="flex items-center justify-between mb-8">
                     <h3 className="text-xl font-serif font-bold flex items-center gap-3">
@@ -359,7 +561,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit, initialT
                       Tout voir <ChevronRight size={14} />
                     </button>
                   </div>
-                  
                   <div className="space-y-6">
                     {bookings.map((b, i) => (
                       <div key={b.id} className="flex items-center justify-between p-5 rounded-[2rem] bg-stone-50/50 hover:bg-stone-50 transition-colors">
@@ -379,88 +580,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit, initialT
                         </div>
                       </div>
                     ))}
-                    {/* Fake extra activity items */}
-                    <div className="flex items-center justify-between p-5 rounded-[2rem] bg-stone-50/50">
-                      <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500">
-                          <Star size={20} />
-                        </div>
-                        <div>
-                          <div className="font-bold text-sm">Nouvel avis 5 étoiles de <span className="text-terracotta">Inès Konaté</span></div>
-                          <div className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mt-1 italic">
-                            "Une expérience impériale !"
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
-
-                {/* Sidebar Stats & Insights */}
                 <div className="space-y-8">
-                  {/* Service Popularity */}
-                  <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50">
-                    <h3 className="text-lg font-serif font-bold mb-6">Popularité Services</h3>
-                    <div className="space-y-6">
-                      {[
-                        { name: 'Nattes & Braids', percentage: 75, color: 'bg-terracotta' },
-                        { name: 'Soin IA', percentage: 45, color: 'bg-blue-500' },
-                        { name: 'Mariage', percentage: 20, color: 'bg-stone-900' },
-                      ].map((item, i) => (
-                        <div key={i}>
-                          <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold mb-2">
-                            <span>{item.name}</span>
-                            <span className="text-stone-400">{item.percentage}%</span>
-                          </div>
-                          <div className="h-2 w-full bg-stone-100 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${item.percentage}%` }}
-                              transition={{ duration: 1.5, delay: i * 0.2 }}
-                              className={`h-full ${item.color}`}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* AI Insight Card */}
                   <div className="bg-stone-900 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-terracotta/20 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-terracotta/40 transition-colors"></div>
                     <div className="relative z-10">
-                      <div className="w-10 h-10 rounded-xl bg-terracotta flex items-center justify-center text-white mb-6">
-                        <Zap size={20} fill="currentColor" />
-                      </div>
-                      <h3 className="text-white font-serif text-xl font-bold mb-3">Conseil IA (Aïda)</h3>
-                      <p className="text-stone-400 text-xs leading-relaxed mb-6">
-                        "Les demandes pour les <span className="text-white font-bold">Locks</span> sont en hausse de 15% à Abidjan. Pensez à ajouter un service spécifique dans votre galerie."
-                      </p>
-                      <button 
-                        onClick={() => setActiveTab('gallery')}
-                        className="text-[10px] uppercase tracking-widest font-bold text-terracotta flex items-center gap-2 group-hover:translate-x-2 transition-transform"
-                      >
-                        Ajouter une photo <ArrowUpRight size={14} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Quick Actions Shortcuts */}
-                  <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50">
-                    <h3 className="text-lg font-serif font-bold mb-6">Actions Rapides</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button onClick={() => { setActiveTab('gallery'); setIsGalleryModalOpen(true); }} className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-stone-50 hover:bg-terracotta hover:text-white transition-all group">
-                        <ImageIcon size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-widest">Portfolio</span>
-                      </button>
-                      <button onClick={() => { setActiveTab('services'); setIsServiceModalOpen(true); }} className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-stone-50 hover:bg-stone-900 hover:text-white transition-all group">
-                        <Plus size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-widest">Service</span>
-                      </button>
+                      <Zap size={20} className="text-terracotta mb-6" />
+                      <h3 className="text-white font-serif text-xl font-bold mb-3">Conseil IA</h3>
+                      <p className="text-stone-400 text-xs leading-relaxed mb-6">"Les demandes pour les Locks sont en hausse. Pensez à mettre à jour votre portfolio."</p>
                     </div>
                   </div>
                 </div>
-
               </div>
             </motion.div>
           )}
@@ -638,54 +768,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit, initialT
               ))}
             </motion.div>
           )}
-
-          {/* TAB: SETTINGS */}
-          {activeTab === 'settings' && (
-            <motion.div key="st" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-              <div className="lg:col-span-7 space-y-10">
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50 space-y-10">
-                  <h3 className="text-xl font-serif font-bold flex items-center gap-3 text-stone-900">
-                    <AtSign size={22} className="text-terracotta" /> Informations Générales
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 gap-8">
-                    <div className="flex flex-col md:flex-row gap-8 items-start">
-                      <div className="space-y-3 shrink-0">
-                        <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold block">Logo Salon</label>
-                        <div 
-                          onClick={() => logoFileInputRef.current?.click()}
-                          className="w-32 h-32 rounded-3xl bg-stone-50 border-2 border-dashed border-stone-100 flex flex-col items-center justify-center cursor-pointer hover:bg-terracotta/5 hover:border-terracotta transition-all overflow-hidden"
-                        >
-                          {settings.logo ? <img src={settings.logo} className="w-full h-full object-cover" /> : <><Camera size={24} className="text-stone-300" /><span className="text-[8px] text-stone-400 font-bold mt-2">LOGO</span></>}
-                          <input type="file" ref={logoFileInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileSelect(e, (b) => updateSetting('logo', b))} />
-                        </div>
-                      </div>
-                      <div className="flex-grow space-y-6">
-                        <div className="space-y-2">
-                          <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Nom de l'établissement</label>
-                          <input value={settings.salonName} onChange={(e) => updateSetting('salonName', e.target.value)} className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Slogan</label>
-                          <textarea value={settings.description} onChange={(e) => updateSetting('description', e.target.value)} rows={3} className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm focus:ring-1 focus:ring-terracotta outline-none resize-none" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="lg:col-span-5 space-y-10">
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-stone-50 space-y-8">
-                  <h3 className="text-xl font-serif font-bold flex items-center gap-3 text-stone-900"><Globe size={22} className="text-terracotta" /> Réseaux</h3>
-                  <div className="space-y-6">
-                    <input value={settings.instagram} onChange={(e) => updateSetting('instagram', e.target.value)} placeholder="Instagram" className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm outline-none" />
-                    <input value={settings.facebook} onChange={(e) => updateSetting('facebook', e.target.value)} placeholder="Facebook" className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 text-sm outline-none" />
-                  </div>
-                </div>
-                <button onClick={handleSaveSettings} className="w-full bg-stone-900 text-white py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-terracotta transition-all shadow-xl">Enregistrer</button>
-              </div>
-            </motion.div>
-          )}
         </AnimatePresence>
 
         {/* --- SERVICE MODAL --- */}
@@ -693,7 +775,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit, initialT
           {isServiceModalOpen && (
             <>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsServiceModalOpen(false)} className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[100]" />
-              <div className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-auto">
+              <div className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-auto flex-col">
                 <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl overflow-hidden pointer-events-auto flex flex-col max-h-[90vh]">
                   <div className="p-8 border-b border-stone-50 flex justify-between items-center">
                     <h3 className="text-2xl font-serif font-bold">{editingService ? 'Modifier' : 'Nouveau'} Service</h3>
